@@ -1,18 +1,9 @@
-
-## Have total emissions from PM2.5 decreased in 
-## the Baltimore City, Maryland (fips == "24510") from 
-## 1999 to 2008? Use the base plotting system to make 
-## a plot answering this question.
-
-# author: MAT Teunis, June 2016
-
 ##########################################
-# Assignment 2: Exploratory Data Analysis, 
-# Course 4, Coursera Data Science
+# Assignment 2: Exploratory Data Analysis, Course 4, Coursera Data Science
 ###########################################
 
 ###############
-# Question 2
+# Question 1
 ##############
 
 ##############
@@ -90,43 +81,52 @@ NEI$year <- as.factor(NEI$year)
 NEI$Pollutant <- as.factor(NEI$Pollutant)
 NEI$fips <- as.factor(NEI$fips)
 
+NEI$year <- as.factor(NEI$year)
+levels(NEI$year)
+summary(NEI$Emissions)
 
-##################################
-# Selecting only data from Baltimore
-##################################
+####################
+# summary statistics
+####################
 
-baltimore_data <- NEI %>% filter(fips == "24510")
+summary <- summarise(group_by(NEI, year),
+          mean=mean(Emissions), 
+          sd=sd(Emissions),
+          median = median.default(Emissions),
+          observations = length(Emissions),
+          total = sum(Emissions)) 
+          
+years <- as.character(summary$year)
 
-baltimore_data_summary <- summarise(group_by(baltimore_data, 
-                                             year),
-                       mean=mean(Emissions), 
-                       sd=sd(Emissions),
-                       median = median.default(Emissions),
-                       observations = length(Emissions),
-                       total = sum(Emissions)) 
-
-years <- as.character(baltimore_data_summary$year)
+## adressing question 1:
+## Have total emissions from PM2.5 decreased in the 
+# United States from 1999 to 2008? 
+# Using the base plotting system, 
+# make a plot showing the total PM2.5 emission 
+# from all sources for each of the years 1999, 2002, 2005, 
+# and 2008.
 
 
-
-
-
-##################################
-# plotting Baltimore data
-##################################
-
-png(filename = "./images/plot2.png", 
-    width = 1200, 
-    height = 800, 
+png(filename = "./images/plot1.png", 
+    width = 480, 
+    height = 480, 
     units = "px")
-par(mar = c(5, 5, 4, 1))
-
-barplot(baltimore_data_summary$total,  
-        ylab = "Total Emission (tons/year)", cex.axis = 1.5,
-        cex.lab = 1.5, main = "Total emission per year", 
-        cex.main = 1.5,
-        names.arg = years, col = "red")
+par(mar = c(3, 5, 4, 8))
+par(las = 1)
+#par(mgp = 0, 1, 0.5)
+# plotting a barplot with total emissions per year
+barplot(summary$total, axes = FALSE,  
+        ylab = "Total PM2.5 Emissions (tons)", cex.axis = 1.2,
+        cex.lab = 1.2, main = "Total PM2.5 Emissions USA per year", 
+        cex.main = 1.2,
+        names.arg = years, col = "blue",
+        cex.names = 1.2)
+axis(side = 4, cex = 1.2)
 
 dev.off()
+
+###########################################################
+
+
 
 
